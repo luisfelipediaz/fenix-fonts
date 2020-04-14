@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head></head>
+
+<body>
+    <section>
+        <div>
+            <button onclick="realizarPurgaArchivos()">
+                Realizar purgado de archivos DNS
+            </button>
+        </div>
+        <br />
+        <div>
+            <strong>
+                <span id="mensaje"></span>
+            </strong>
+        </div>
+        <div>
+            <ul id="archivos">
+            </ul>
+        </div>
+    </section>
+
+    <script>
+        const urlBase = 'https://purge.jsdelivr.net/gh/luisfelipediaz/fenix-fonts@master';
+        const listado = document.getElementById('archivos');
+        const mensaje = document.getElementById('mensaje');
+
+        const servicioPurga = async () => {
+            await ejecutarServicio('fenix.eot')
+                .then(() => ejecutarServicio('fenix.ttf'))
+                .then(() => ejecutarServicio('fenix.woff'))
+                .then(() => ejecutarServicio('fenix.svg'))
+                .then(() => purgaTerminada());
+        }
+
+        function realizarPurgaArchivos() {
+            purgaIniciada();
+            servicioPurga();
+        }
+
+        function ejecutarServicio(archivo) {
+            const url = `${urlBase}/${archivo}`;
+            return fetch(url, {
+                'mode': 'no-cors',
+                'headers': {
+                    'Access-Control-Allow-Origin': '*',
+                }
+            })
+                .then(response => asignarTerminado(archivo));
+        }
+
+        function asignarTerminado(archivo) {
+            const etiqueta = document.createElement('li');
+            const texto = `${archivo} purgado`;
+            etiqueta.appendChild(document.createTextNode(texto));
+            listado.append(etiqueta);
+        }
+
+        function purgaIniciada() {
+            cambiarTextoMensaje('Realizando purga de archivos...');
+        }
+
+        function purgaTerminada() {
+            cambiarTextoMensaje('Purga Terminada');
+        }
+
+        function cambiarTextoMensaje(texto) {
+            mensaje.innerText = texto;
+        }
+
+    </script>
+</body>
+
+</html>
